@@ -15,7 +15,15 @@ const client = new Client({
 
 app.get('/', function(req, res) {
     res.send('Hello Psycap!');
-})
+});
+
+
+app.get('/teste', function(req, res) {
+    client.query('SELECT NOW()')
+    .then(result => console.log(result))
+    .catch(e => console.error(e.stack))
+    .then(() => client.end())
+});
 
 app.get('/criaTableUsuarios', function(req, res){
     client.connect();
