@@ -5,14 +5,19 @@ const bodyParser = require('body-parser');
 var rp = require('request-promise');
 const pg = require('pg');
 
-const { Client } = require('pg');
-var conString = process.env.DATABASE_URL;
+const { Pool } = require('pg');
+const dotenv = require('dotenv');
 
+dotenv.config();
 
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true,
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL
 });
+
+pool.on('connect', () => {
+  console.log('connected to the db');
+});
+
 
 app.get('/', function(req, res) {
     res.send('Hello Psycap!');
@@ -20,41 +25,46 @@ app.get('/', function(req, res) {
 
 
 app.get('/teste', function(req, res) {
-  pg.connect(conString, function(err, client2, done) {
+const queryText =
+    `CREATE TABLE IF NOT EXISTS
+      reflections(
+        id UUID PRIMARY KEY,
+        success VARCHAR(128) NOT NULL,
+        low_point VARCHAR(128) NOT NULL,
+        take_away VARCHAR(128) NOT NULL,
+        created_date TIMESTAMP,
+        modified_date TIMESTAMP
+      )`;
 
-    if (err) {
-      return console.error('error fetching client from pool', err);
-    }
-    client2.query('SELECT $1::int AS number', ['1'], function(err, result) {
-      done();
-      if (err) {
-        return console.error('error running query', err);
-      }
-      console.log(result.rows[0].number);
+  pool.query(queryText)
+    .then((res) => {
+      console.log(res);
+      pool.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      pool.end();
     });
-  
-  });
-  
 });
 
 app.get('/criaTableUsuarios', function(req, res){
-    client.connect();
+//     client.connect();
 
-    client.query('create table usuarios (id bigint auto_increment, nome text, email text, telefone text, senha text);', (err, res) => {
-        console.log('Criar tabela', res);
-    });
+//     client.query('create table usuarios (id bigint auto_increment, nome text, email text, telefone text, senha text);', (err, res) => {
+//         console.log('Criar tabela', res);
+//     });
 
 });
 
 app.get('/verTableUsuarios', function(req, res){
-    client.connect();
+//     client.connect();
 
-    client.query(`SELECT * FROM usuarios;`, (err, res) => {
-        console.log('Seleciona tabela usuarios res', res);
-        console.log('Seleciona tabela usuarios resrows', res.rows);
-    });
+//     client.query(`SELECT * FROM usuarios;`, (err, res) => {
+//         console.log('Seleciona tabela usuarios res', res);
+//         console.log('Seleciona tabela usuarios resrows', res.rows);
+//     });
 
-    client.end();
+//     client.end();
 });
 
 app.post('/inserirUsuario', function(request, response) {
@@ -66,13 +76,13 @@ app.post('/inserirUsuario', function(request, response) {
 
     let query = 'INSERT INTO usuarios VALUES '+ '('+ nome +','+ email +','+ telefone +','+ senha +')';
 
-    client.connect();
+//     client.connect();
 
-    client.query(query, (err, result) => {
-        console.log('result insert', result);
-    });
+//     client.query(query, (err, result) => {
+//         console.log('result insert', result);
+//     });
 
-    client.end();
+//     client.end();
 
 });
 
