@@ -19,6 +19,7 @@ app.get('/', function(req, res) {
 
 
 app.get('/teste', function(req, res) {
+  client.connect();
     client.query('SELECT NOW()')
     .then(result => console.log(result))
     .catch(e => console.error(e.stack))
