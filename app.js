@@ -19,12 +19,12 @@ app.get('/', function(req, res) {
 
 
 app.get('/teste', function(req, res) {
-  pg.connect(conString, function(err, client, done) {
+  pg.connect(conString, function(err, client2, done) {
 
     if (err) {
       return console.error('error fetching client from pool', err);
     }
-    client.query('SELECT $1::int AS number', ['1'], function(err, result) {
+    client2.query('SELECT $1::int AS number', ['1'], function(err, result) {
       done();
       if (err) {
         return console.error('error running query', err);
