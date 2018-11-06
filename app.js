@@ -5,7 +5,21 @@ const bodyParser = require('body-parser');
 var rp = require('request-promise');
 const pg = require('pg');
 
-const { Pool } = require('pg');
+export db {
+  query(text, params){
+    return new Promise((resolve, reject) => {
+      pool.query(text, params)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      })
+    })
+  }
+}
+
+
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL
@@ -18,6 +32,28 @@ pool.on('connect', () => {
 
 app.get('/', function(req, res) {
     res.send('Hello Psycap!');
+});
+
+app.get('/insert', function(req, res) {
+    const text = `INSERT INTO
+      reflections(id, success, low_point, take_away, created_date, modified_date)
+      VALUES($1, $2, $3, $4, $5, $6)
+      returning *`;
+    const values = [
+      1,
+      "sucess1",
+      "lo1",
+      "take1",
+      null,
+      null
+    ];
+
+    try {
+      const { rows } = await db.query(text, values);
+      return res.status(201).send(rows[0]);
+    } catch(error) {
+      return res.status(400).send(error);
+    }
 });
 
 
