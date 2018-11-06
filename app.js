@@ -19,11 +19,21 @@ app.get('/', function(req, res) {
 
 
 app.get('/teste', function(req, res) {
-  client.connect();
-    client.query('SELECT NOW()')
-    .then(result => console.log(result))
-    .catch(e => console.error(e.stack))
-    .then(() => client.end())
+  pg.connect(conString, function(err, client, done) {
+
+    if (err) {
+      return console.error('error fetching client from pool', err);
+    }
+    client.query('SELECT $1::int AS number', ['1'], function(err, result) {
+      done();
+      if (err) {
+        return console.error('error running query', err);
+      }
+      console.log(result.rows[0].number);
+    });
+  
+  });
+  
 });
 
 app.get('/criaTableUsuarios', function(req, res){
