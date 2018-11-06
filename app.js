@@ -47,7 +47,7 @@ app.get('/insert', function(req, res) {
     ];
 
     try {
-      const { rows } = await db.query(text, values);
+      const { rows } = await db(text, values);
       return res.status(201).send(rows[0]);
     } catch(error) {
       return res.status(400).send(error);
