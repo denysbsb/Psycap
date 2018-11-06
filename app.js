@@ -6,6 +6,7 @@ var rp = require('request-promise');
 const pg = require('pg');
 
 const { Client } = require('pg');
+var conString = process.env.DATABASE_URL;
 
 
 const client = new Client({
