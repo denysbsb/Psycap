@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 var rp = require('request-promise');
 const pg = require('pg');
 
-export db {
+const db = {
   query(text, params){
     return new Promise((resolve, reject) => {
       pool.query(text, params)
