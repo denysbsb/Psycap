@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 var rp = require('request-promise');
 const pg = require('pg');
 
+import db from '../db';
+
 const db = async function(text, params){
     return new Promise((resolve, reject) => {
       pool.query(text, params)
@@ -46,12 +48,17 @@ app.get('/insert', function(req, res) {
       null
     ];
 
-    try {
-      const { rows } = await db(text, values);
-      return res.status(201).send(rows[0]);
-    } catch(error) {
-      return res.status(400).send(error);
-    }
+      pool.query(text, values)
+      .then((res) => {
+        pool.end();
+        const rows = res.rows;
+        return res.status(201).send(rows[0]);
+      })
+      .catch((err) => {
+        pool.end();
+        return res.status(400).send(err);
+      })
+      
 });
 
 
