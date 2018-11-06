@@ -5,20 +5,6 @@ const bodyParser = require('body-parser');
 var rp = require('request-promise');
 const pg = require('pg');
 
-const db = async function(text, params){
-    return new Promise((resolve, reject) => {
-      pool.query(text, params)
-      .then((res) => {
-        resolve(res);
-      })
-      .catch((err) => {
-        reject(err);
-      })
-    })
-}
-
-
-
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL
 });
